@@ -1,0 +1,22 @@
+{
+  "name": "avengers-api",
+  "version": "1.0.0",
+  "description": "Avengers API for 20.2 NIBM Computing Batch with Github repo",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LekhanaSandeep1997/avengers-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LekhanaSandeep1997/avengers-api/issues"
+  },
+  "homepage": "https://github.com/LekhanaSandeep1997/avengers-api#readme",
+  "dependencies": {
+    "express": "^4.17.2"
+  }
+}
