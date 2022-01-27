@@ -1,9 +1,15 @@
 const express = require('express');
 const req = require('express/lib/request');
+const logger = require('./middleware/logger');
+const authenticator = require('./middleware/authenticator');
 
 const app = express(); //create an express application
 
-app.use(express.json());  // Parse json objects 
+app.use(express.json());  // Parse json objects (middleware of express.json) telling app to use inbuit middleware
+
+app.use(authenticator);
+
+app.use(logger); //telling app to use the custom middleware logger
 
 app.listen(3000, ()=>{
     console.log("Listening is started on Port 3000");
@@ -24,6 +30,7 @@ app.get("/", (req, res) =>{
 app.get("/api/avengers", (req, res) =>{
     //let avengers = ['Iron Man','Captain America', 'Thor'];
     //res.send(avengers);
+    console.log("GET Method Called...");
     res.send(avengerArray);
 });
 
