@@ -1,4 +1,5 @@
 const express = require('express');
+const Avenger = require('../models/avengerModel');
 const router = express.Router();
 
 
@@ -8,11 +9,19 @@ let avengerArray = [
     { id: 3, name: "Black Widow" },
 ]
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+
+    try{
+        let avengers = await Avenger.find().sort({ name: "asc"});
+        return res.send(avengers);
+    }catch(ex){
+        return res.status(500).send("Error: " + ex.message);
+    }
+
     //let avengers = ['Iron Man','Captain America', 'Thor'];
     //res.send(avengers);
-    console.log("GET Method Called...");
-    res.send(avengerArray);
+    // console.log("GET Method Called...");
+    // res.send(avengerArray);
 });
 
 router.get('/:avengerId', (req, res) => {
@@ -24,19 +33,43 @@ router.get('/:avengerId', (req, res) => {
 });
 
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
 
-    // Validation
-    if (!req.body.name) {
-        return res.status(400).send("Not all mandotory values are sent");
+    // if (!req.body.name) {
+    //     return res.status(400).send("Not All mandotory values are sent");
+    // }
+
+    try {
+
+        let avenger = new Avenger({
+            name: req.body.name,
+            birthname: req.body.birthname,
+            movies: req.body.movies,
+            imgUrl: req.body.imgUrl,
+            likeCount: req.body.likeCount,
+            deceased: req.body.deceased
+        });
+
+        avenger = await avenger.save();
+        res.send(avenger);
+
+    } catch (ex) {
+        return res.status(500).send("Error: " + ex.message);
     }
 
-    let newAvengerObj = {
-        id: avengerArray.length + 1,
-        name: req.body.name
-    };
-    avengerArray.push(newAvengerObj);
-    res.send(newAvengerObj);
+
+
+    // // Validation
+    // if (!req.body.name) {
+    //     return res.status(400).send("Not all mandotory values are sent");
+    // }
+
+    // let newAvengerObj = {
+    //     id: avengerArray.length + 1,
+    //     name: req.body.name
+    // };
+    // avengerArray.push(newAvengerObj);
+    // res.send(newAvengerObj);
 });
 
 

@@ -1,4 +1,6 @@
 const express = require('express');
+const mongoose = require('mongoose');
+
 const req = require('express/lib/request');
 const logger = require('./middleware/logger');
 const authenticator = require('./middleware/authenticator');
@@ -6,7 +8,6 @@ const avengers = require('./routes/avengers');
 const home = require('./routes/home');
 
 const app = express(); //create an express application
-
 app.use(express.json());  // Parse json objects (middleware of express.json) telling app to use inbuit middleware
 
 app.use(authenticator);
@@ -18,6 +19,16 @@ app.listen(3000, () => {
     console.log("Listening is started on Port 3000");
 });
 
+// Database Connection String
+mongoose.connect("mongodb://localhost/avengerdb", { useNewUrlParser: true})
+    .then(
+        () => {console.log("Connected to db Successfully.....")}
+    )
+    .catch(() => console.log("Error " + err));
+
+
+
+    
 
 //  Below have the previous exercises that we did (this is now partitions to routes)
 
