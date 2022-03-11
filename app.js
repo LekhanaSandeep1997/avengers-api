@@ -1,22 +1,28 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const req = require('express/lib/request');
 const logger = require('./middleware/logger');
 const authenticator = require('./middleware/authenticator');
 const avengers = require('./routes/avengers');
 const home = require('./routes/home');
+const users = require('./routes/users');
+const auth = require('./routes/auth');
 
 const app = express(); //create an express application
 app.use(express.json());  // Parse json objects (middleware of express.json) telling app to use inbuit middleware
 
+app.use(cors());
 app.use(authenticator);
 app.use(logger); //telling app to use the custom middleware logger
+app.use("/api/auth", auth);
+app.use("/api/users", users);
 app.use('/api/avengers', avengers);
 app.use('/', home);
 
-app.listen(3000, () => {
-    console.log("Listening is started on Port 3000");
+app.listen(5000, () => {
+    console.log("Listening is started on Port 5000");
 });
 
 // Database Connection String

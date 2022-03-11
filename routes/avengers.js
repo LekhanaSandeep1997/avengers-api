@@ -1,7 +1,10 @@
 const express = require('express');
+const { JsonWebTokenError } = require('jsonwebtoken');
 const Avenger = require('../models/avengerModel');
 const router = express.Router();
+const jwt = require("jsonwebtoken");
 
+SECRET_KEY = "123456789"
 
 let avengerArray = [
     { id: 1, name: "Captain America" },
@@ -10,11 +13,21 @@ let avengerArray = [
 ]
 
 router.get("/", async (req, res) => {
+    const token = req.header("x-jwt-token");
+
+    if(!token) return res.status(401).send("Access is denied. No token Found");
 
     try{
-        let avengers = await Avenger.find().sort({ name: "asc"});
+        jwt.verify(token, SECRET_KEY)
+    }
+    catch(e){
+        return res.status(400).send("Invalid Token");
+    }
+
+    try {
+        let avengers = await Avenger.find().sort({ name: "asc" });
         return res.send(avengers);
-    }catch(ex){
+    } catch (ex) {
         return res.status(500).send("Error: " + ex.message);
     }
 
@@ -24,12 +37,20 @@ router.get("/", async (req, res) => {
     // res.send(avengerArray);
 });
 
-router.get('/:avengerId', (req, res) => {
-    let avenger = avengerArray.find(a => a.id == req.params.avengerId);
+router.get('/:avengerId', async (req, res) => {
+    let avenger = await Avenger.findById(req.params.avengerId);
     if (!avenger) {
         return res.status(404).send("Page not Found (ID not found in system)");
     }
     res.status(200).send(avenger);
+
+
+
+    // let avenger = avengerArray.find(a => a.id == req.params.avengerId);
+    // if (!avenger) {
+    //     return res.status(404).send("Page not Found (ID not found in system)");
+    // }
+    // res.status(200).send(avenger);
 });
 
 
@@ -73,31 +94,57 @@ router.post('/', async (req, res) => {
 });
 
 
-router.put('/:avengerId', (req, res) => {
-    let avenger = avengerArray.find(a => a.id == req.params.avengerId);
-
+router.put('/:avengerId', async (req, res) => {
+    
+    let avenger = await Avenger.findById(req.params.avengerId);
     if (!avenger) {
         return res.status(404).send("Page not Found (ID not found in system)");
     }
-
+    
+    // if (!req.body.name) {
+    //     return res.status(400).send("Not all mandotory values are sent");
+    // }
+    
     // Validation
-    if (!req.body.name) {
-        return res.status(400).send("Not all mandotory values are sent");
+    if (!req.body.likeCount) {
+        return res.status(400).send("Not all mandatory values are sent");
     }
 
-    avenger.name = req.body.name;
+    avenger.set({ likeCount: req.body.likeCount });
+    avenger = await avenger.save();
+    avenger = await avenger.save();
     res.send(avenger);
+
+    // avenger.name = req.body.name;
+
+    //res.send(avenger);
+
+    //avenger.set({name: req.body.name});
+
+    //array
+    // let avenger = avengerArray.find(a => a.id == req.params.avengerId);
+    // if (!avenger) {
+    //     return res.status(404).send("Page not Found (ID not found in system)");
+    // }
+    // // Validation
+    // if (!req.body.name) {
+    //     return res.status(400).send("Not all mandotory values are sent");
+    // }
+    // avenger.name = req.body.name;
+    // res.send(avenger);
 });
 
-router.delete('/:avengerId', (req, res) => {
-    let avenger = avengerArray.find(a => a.id == req.params.avengerId);
+router.delete('/:avengerId', async (req, res) => {
+    let avenger = await Avenger.findByIdAndDelete({_id: req.params.avengerId})
+
+    // let avenger = avengerArray.find(a => a.id == req.params.avengerId);
 
     if (!avenger) {
         return res.status(404).send("Page not Found (ID not found in system)");
     }
 
-    let indexOfAvenger = avengerArray.indexOf(avenger);
-    avengerArray.splice(indexOfAvenger, 1);
+    // let indexOfAvenger = avengerArray.indexOf(avenger);
+    // avengerArray.splice(indexOfAvenger, 1);
 
     res.send(avenger);
 });
