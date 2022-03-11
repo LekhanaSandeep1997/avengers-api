@@ -13,16 +13,16 @@ let avengerArray = [
 ]
 
 router.get("/", async (req, res) => {
-    const token = req.header("x-jwt-token");
+    // const token = req.header("x-jwt-token");
 
-    if(!token) return res.status(401).send("Access is denied. No token Found");
+    // if(!token) return res.status(401).send("Access is denied. No token Found");
 
-    try{
-        jwt.verify(token, SECRET_KEY)
-    }
-    catch(e){
-        return res.status(400).send("Invalid Token");
-    }
+    // try{
+    //     jwt.verify(token, SECRET_KEY)
+    // }
+    // catch(e){
+    //     return res.status(400).send("Invalid Token");
+    // }
 
     try {
         let avengers = await Avenger.find().sort({ name: "asc" });
@@ -59,6 +59,17 @@ router.post('/', async (req, res) => {
     // if (!req.body.name) {
     //     return res.status(400).send("Not All mandotory values are sent");
     // }
+
+    const token = req.header("x-jwt-token");
+
+    if(!token) return res.status(401).send("Access is denied. No token Found");
+
+    try{
+        jwt.verify(token, SECRET_KEY)
+    }
+    catch(e){
+        return res.status(400).send("Invalid Token");
+    }
 
     try {
 
@@ -135,6 +146,24 @@ router.put('/:avengerId', async (req, res) => {
 });
 
 router.delete('/:avengerId', async (req, res) => {
+
+    const token = req.header("x-jwt-token");
+
+    if(!token) return res.status(401).send("Access is denied. No token Found");
+
+    // checking whether valid and authenticated
+    try{
+        jwt.verify(token, SECRET_KEY)
+    }
+    catch(e){
+        return res.status(400).send("Invalid Token");
+    }
+
+    let decoded = jwt.decode(token, SECRET_KEY);
+    if(!decoded.isAdmin){
+        return res.status(403).send("Forbidden. You dont have access to this endpoint");
+    }
+
     let avenger = await Avenger.findByIdAndDelete({_id: req.params.avengerId})
 
     // let avenger = avengerArray.find(a => a.id == req.params.avengerId);
