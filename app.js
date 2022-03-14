@@ -21,12 +21,13 @@ app.use("/api/users", users);
 app.use('/api/avengers', avengers);
 app.use('/', home);
 
-app.listen(5000, () => {
-    console.log("Listening is started on Port 5000");
+const PORT = process.env.PORT || 5000
+app.listen(PORT, () => {
+    console.log("Listening on Port: " + PORT);
 });
 
 // Database Connection String
-mongoose.connect("mongodb://localhost/avengerdb", { useNewUrlParser: true})
+mongoose.connect("mongodb+srv://root:root@cluster0.ilevr.mongodb.net/avengersdb?retryWrites=true&w=majority", { useNewUrlParser: true})
     .then(
         () => {console.log("Connected to db Successfully.....")}
     )
