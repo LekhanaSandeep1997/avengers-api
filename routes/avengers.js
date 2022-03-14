@@ -171,7 +171,7 @@ router.delete('/:avengerId', async (req, res) => {
     if (!avenger) {
         return res.status(404).send("Page not Found (ID not found in system)");
     }
-
+//
     // let indexOfAvenger = avengerArray.indexOf(avenger);
     // avengerArray.splice(indexOfAvenger, 1);
 
